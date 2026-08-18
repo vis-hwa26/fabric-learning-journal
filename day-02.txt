@@ -1,0 +1,398 @@
+# OneLake and Lakehouses in Microsoft Fabric
+
+## OneLake
+
+**OneLake is the unified storage layer of Microsoft Fabric.** It provides a single logical data lake for the organization, allowing different Fabric workloads to work with the same data.
+
+The main idea is to avoid unnecessary movement and duplication of data.
+
+```text
+                         Microsoft Fabric
+                                │
+                              OneLake
+                                │
+        ┌───────────────────────┼───────────────────────┐
+        │                       │                       │
+        ▼                       ▼                       ▼
+    Workspace A            Workspace B            Workspace C
+        │                       │                       │
+     Lakehouse               Warehouse             Lakehouse
+        │                       │                       │
+        └───────────────────────┼───────────────────────┘
+                                │
+                         Shared Data Layer
+```
+
+### Shortcuts
+
+**Shortcuts allow Fabric to access data that already exists in another location without creating another physical copy of the data.**
+
+For example:
+
+```text
+Existing Data
+     │
+     │  Shortcut
+     ▼
+   OneLake
+     │
+     ▼
+Fabric Workloads
+```
+
+Instead of:
+
+```text
+Source Data
+     │
+     ▼
+Copy Data
+     │
+     ▼
+OneLake
+
+Source Data + Copy = More Storage + More Maintenance
+```
+
+Using shortcuts helps reduce unnecessary copies and allows Fabric to work with data while keeping the source as the original location.
+
+---
+
+## OneLake Catalog
+
+The **OneLake catalog** helps users discover, understand, monitor, and manage data across Fabric.
+
+It provides information such as:
+
+* Item metadata
+* Data discovery
+* Sensitivity labels
+* Data refresh status
+* Governance information
+* Actions that can improve data governance
+
+A simple way to think about it:
+
+```text
+                    OneLake Catalog
+                           │
+          ┌────────────────┼────────────────┐
+          ▼                ▼                ▼
+      Discover           Monitor         Govern
+       Data               Data            Data
+          │                │                │
+          ▼                ▼                ▼
+     Metadata         Refresh Status   Sensitivity
+                                      Labels / Policies
+```
+
+---
+
+# Lakehouses in Microsoft Fabric
+
+A **Lakehouse** combines the strengths of a data lake and a data warehouse.
+
+It provides:
+
+* The **flexible and scalable storage** of a data lake
+* The ability to **query and analyze structured data** like a data warehouse
+
+```text
+                 LAKEHOUSE
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+        ▼                         ▼
+   Data Lake                 Data Warehouse
+        │                         │
+ Flexible Storage          Query & Analytics
+        │                         │
+        └────────────┬────────────┘
+                     ▼
+               Fabric Lakehouse
+```
+
+---
+
+# Lakehouse Structure
+
+A Fabric Lakehouse mainly contains **Files** and **Tables**.
+
+```text
+                    Lakehouse
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+         Files                   Tables
+            │                       │
+      File-based data          Structured data
+            │                       │
+    CSV / JSON / Parquet       Delta tables
+```
+
+### Files
+
+The **Files** area is used for file-based data, such as:
+
+```text
+Files
+ ├── sales.csv
+ ├── customers.json
+ └── products.parquet
+```
+
+### Tables
+
+The **Tables** area contains structured data that can be queried and analyzed.
+
+When you create a table in a Fabric Lakehouse, it is stored as a **Delta Lake table** in the underlying OneLake storage.
+
+```text
+Lakehouse
+    │
+    └── Tables
+          │
+          ▼
+      Delta Table
+          │
+          ▼
+       OneLake
+```
+
+---
+
+# Why Delta Lake Tables?
+
+Delta Lake provides important features that make data more reliable and easier to manage.
+
+### 1. ACID Transactions
+
+ACID transactions help ensure that data operations are reliable and consistent.
+
+For example:
+
+```text
+Update Data
+     ↓
+Transaction
+     ↓
+Success → Changes committed
+Failure → Changes rolled back
+```
+
+### 2. Schema Enforcement
+
+Schema enforcement helps ensure that incoming data follows the expected structure and data types.
+
+For example:
+
+```text
+Expected:
+CustomerID → Integer
+Revenue    → Decimal
+Region     → String
+```
+
+If incoming data doesn't match the expected schema, the system can prevent invalid data from being written.
+
+### 3. Time Travel
+
+Delta Lake maintains a **transaction log** that records changes to the table.
+
+This allows you to access previous versions of data.
+
+```text
+Table History
+
+Version 1
+   ↓
+Version 2
+   ↓
+Version 3
+   ↓
+Current Version
+```
+
+This is useful when you need to understand or recover an earlier version of the data.
+
+### 4. Efficient Updates
+
+Delta Lake supports efficient operations such as:
+
+* Inserts
+* Updates
+* Deletes
+* Merges
+
+This makes it suitable for data engineering workloads where data changes over time.
+
+---
+
+# Managing Lakehouse Access
+
+When an organization centralizes data in a Lakehouse, controlling access becomes important.
+
+Microsoft Fabric provides multiple levels of access control.
+
+```text
+                    Lakehouse Security
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+        ▼                  ▼                  ▼
+ Workspace Roles    Item-Level Sharing   Granular Access
+        │                  │                  │
+        └──────────────────┼──────────────────┘
+                           ▼
+                     Schema-Level
+                        Access
+```
+
+### Workspace Roles
+
+Workspace roles control what users can do within a workspace.
+
+For example, users can have different levels of permissions depending on their role.
+
+### Item-Level Sharing
+
+Access can be granted to specific Fabric items rather than giving access to everything in a workspace.
+
+### Granular Control
+
+More detailed permissions can be applied when users need access to specific data or operations.
+
+### Schema-Level Access
+
+Schemas can also be used to organize and control access to groups of tables.
+
+---
+
+# Schemas in a Lakehouse
+
+When schemas are enabled for a Lakehouse, a default schema named **`dbo`** is created automatically.
+
+You can organize tables using schemas.
+
+```text
+Lakehouse
+    │
+    └── Schemas
+          │
+          ├── dbo
+          │    ├── Sales
+          │    └── Customers
+          │
+          └── Finance
+               ├── Revenue
+               └── Expenses
+```
+
+Schemas make a Lakehouse easier to organize, manage, and secure.
+
+---
+
+# Two Ways to Work with a Lakehouse
+
+Fabric provides two important ways to interact with Lakehouse data:
+
+```text
+                    Lakehouse
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+             ▼                     ▼
+      Lakehouse Explorer    SQL Analytics Endpoint
+             │                     │
+             ▼                     ▼
+       Files & Tables          SQL Queries
+       Data Management        Data Analysis
+```
+
+### 1. Lakehouse Explorer
+
+The **Lakehouse Explorer** provides a visual interface for working with:
+
+* Files
+* Tables
+* Schemas
+* Data organization
+
+It is useful when you want to navigate and manage the contents of your Lakehouse.
+
+### 2. SQL Analytics Endpoint
+
+The **SQL analytics endpoint** allows you to query Lakehouse tables using SQL.
+
+For example:
+
+```sql
+SELECT
+    Region,
+    SUM(Revenue) AS TotalRevenue
+FROM Sales
+GROUP BY Region;
+```
+
+So:
+
+> **Lakehouse Explorer = visually explore and manage the Lakehouse**
+
+> **SQL Analytics Endpoint = query Lakehouse tables using SQL**
+
+---
+
+# Overall Picture
+
+All these concepts fit together like this:
+
+```text
+                         MICROSOFT FABRIC
+                                │
+                                ▼
+                             OneLake
+                                │
+                ┌───────────────┴───────────────┐
+                │                               │
+                ▼                               ▼
+            Lakehouse                       Other Fabric
+                │                            Workloads
+       ┌────────┴────────┐
+       │                 │
+       ▼                 ▼
+    Files             Tables
+       │                 │
+       │              Delta Lake
+       │                 │
+       └────────┬────────┘
+                ▼
+             OneLake
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+Lakehouse Explorer   SQL Analytics
+                         Endpoint
+        │                │
+        └───────┬────────┘
+                ▼
+             Analysis
+                │
+                ▼
+            Power BI /
+         Business Insights
+```
+
+## Key Takeaways
+
+* **OneLake** is the unified logical data lake for Microsoft Fabric.
+* **Shortcuts** let Fabric access existing data without creating another physical copy.
+* **OneLake Catalog** helps with data discovery, metadata, monitoring, and governance.
+* A **Lakehouse** combines data lake storage with analytical capabilities.
+* Lakehouses contain **Files** and **Tables**.
+* Lakehouse tables use **Delta Lake** format.
+* Delta Lake provides features such as **ACID transactions, schema enforcement, time travel, and efficient data modifications**.
+* **Workspace roles, item-level permissions, granular controls, and schema-level access** help secure Lakehouse data.
+* **Lakehouse Explorer** provides a visual way to work with Lakehouse contents.
+* The **SQL analytics endpoint** allows you to query Lakehouse tables using SQL.
+* A well-organized and governed Lakehouse can become the foundation for analytics and intelligent experiences across Microsoft Fabric.
