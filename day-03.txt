@@ -1,0 +1,97 @@
+# Microsoft Fabric Lakehouse Learning
+
+## Overview
+
+Today I studied the Microsoft Fabric Lakehouse architecture and how a Lakehouse is used for data engineering and analytics.
+
+Reference:
+[Microsoft Learn — What is a Lakehouse in Microsoft Fabric?](https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-overview?utm_source=chatgpt.com)
+
+## Topics Learned
+
+* What is a Microsoft Fabric Lakehouse?
+* Lakehouse vs. Data Warehouse
+* OneLake
+* Delta Lake
+* Tables and Files in a Lakehouse
+* Apache Spark
+* Spark SQL
+* SQL Analytics Endpoint
+* OneLake Shortcuts
+* Lakehouse Explorer
+* Notebooks
+* Data Pipelines
+* Dataflows Gen2
+* Integration with Power BI
+* How Lakehouse supports data engineering and analytics
+
+## Key Understanding
+
+A Fabric Lakehouse combines the flexibility of a data lake with the querying capabilities of a data warehouse.
+
+It allows structured and unstructured data to be stored in one location and provides access through both Spark and SQL.
+
+### Basic Architecture
+
+
+                 Microsoft Fabric
+                        │
+                    OneLake
+                        │
+                    Lakehouse
+                  ┌─────┴─────┐
+                  │           │
+               Tables       Files
+              (Delta)    (CSV/Parquet)
+                  │
+        ┌─────────┼─────────┐
+        │         │         │
+      Spark      SQL      Power BI
+    Notebooks  Endpoint    Reports
+        │         │
+        └─────────┴─────────┘
+          Data Engineering
+           & Analytics
+
+## Lakehouse vs Warehouse
+
+| Lakehouse                           | Warehouse                         |
+| ----------------------------------- | --------------------------------- |
+| Mainly Spark-based                  | Mainly T-SQL-based                |
+| Structured + unstructured data      | Structured data                   |
+| Good for data engineering           | Good for BI/reporting             |
+| Supports notebooks                  | SQL-first development             |
+| Uses Delta Lake                     | Uses Delta format                 |
+| Suitable for medallion architecture | Suitable for dimensional modeling |
+
+## Fabric Trial Issue
+
+I am currently stuck with the Microsoft Fabric trial.
+
+I have not been able to start the Fabric trial capacity, which prevents me from fully continuing the hands-on Fabric exercises.
+
+According to Microsoft documentation, a Fabric trial normally provides access to Fabric workloads for 60 days. If the **Start trial** option is unavailable, possible reasons include:
+
+* Fabric trials may be disabled for the tenant.
+* The tenant may have reached its trial-capacity limit.
+* An administrator may need to enable the required tenant settings.
+* An existing Power BI/Fabric trial may already be associated with the account.
+
+I am currently investigating this issue before continuing with the practical Fabric work.
+
+## Learning Status
+
+* [x] Studied Fabric Lakehouse overview
+* [x] Understood Lakehouse vs Warehouse
+* [x] Learned about OneLake
+* [x] Learned about Delta Lake
+* [x] Studied Spark and SQL access
+* [x] Studied SQL Analytics Endpoint
+* [x] Studied Lakehouse Explorer
+* [ ] Start Fabric Trial
+* [ ] Continue hands-on Lakehouse implementation
+* [ ] Practice data ingestion
+* [ ] Practice Spark transformations
+* [ ] Connect Lakehouse data to Power BI
+
+
