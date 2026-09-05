@@ -1,0 +1,35 @@
+# Microsoft Fabric — Create a Lakehouse
+
+Hands-on lab completed from [Microsoft Learn: Create a Microsoft Fabric Lakehouse](https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/01-lakehouse.html), then rebuilt independently from memory to reinforce the workflow end-to-end.
+
+## What this covers
+
+Microsoft Fabric's **Lakehouse** combines the flexible file storage of a data lake (OneLake, built on ADLS Gen2) with the structured querying of a data warehouse, using the open **Delta Lake** table format as the metadata layer.
+
+## Steps performed
+
+1. **Workspace setup** — Created a new Fabric workspace with Trial capacity assigned.
+2. **Lakehouse creation** — Created a Lakehouse item under *Data Engineering*, exposing two areas:
+   - `Tables/` — managed Delta Lake tables, queryable via SQL
+   - `Files/` — raw files in OneLake storage (supports shortcuts to external data)
+3. **Data ingestion** — Uploaded `sales.csv` into a `Files/data` subfolder.
+4. **Load to table** — Used **Load to Tables → New table** to convert the CSV into a managed Delta table (`sales`), backed by Parquet files + a `_delta_log` transaction log.
+5. **SQL analytics endpoint** — Switched from Lakehouse view to the **SQL analytics endpoint**, which is auto-provisioned for every lakehouse, and ran a T-SQL aggregation (see `query.sql`).
+6. **Visual query** — Built the same kind of aggregation using the Power Query–based **visual query** editor (no-code path): selected `SalesOrderNumber` and `SalesOrderLineNumber`, then grouped by `SalesOrderNumber` with a distinct count of line numbers to get line-items-per-order.
+7. **Cleanup** — Removed the workspace after validating the exercise.
+
+## Key concepts reinforced
+
+- A Fabric Lakehouse gives **one copy of data, two query paths**: Spark/file-based access via `Files`, and SQL access via `Tables` — no duplication needed.
+- Loading a file "to table" materializes it as **Delta Parquet + transaction log**, not just a copied CSV.
+- The **SQL analytics endpoint** is generated automatically per lakehouse — there's no separate provisioning step.
+- The same transformation (line items per order) can be done in **T-SQL** or **no-code visual query**, which matters when bridging data engineering and analyst audiences.
+
+## Files in this repo
+
+- `query.sql` — the SQL query used against the `sales` table
+- `README.md` — this write-up
+
+## Source
+
+Adapted from the official [MicrosoftLearning/mslearn-fabric](https://github.com/MicrosoftLearning/mslearn-fabric) lab series.
