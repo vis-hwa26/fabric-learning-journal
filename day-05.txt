@@ -1,0 +1,46 @@
+# Analyze Data with Apache Spark in Fabric
+
+## Ingesting multi-year CSV order data into a lakehouse and using PySpark (plus Spark SQL) in a Fabric notebook to explore, transform, and visualize it.
+
+## Steps performed
+
+1. Created a workspace + lakehouse, uploaded `orders/` (2019–2021 CSVs) to `Files/`.
+2. Created a notebook and loaded `2019.csv` into a DataFrame with `spark.read.format("csv")`.
+3. Defined an explicit `StructType` schema (`SalesOrderNumber`, `OrderDate`, `Item`, `Quantity`, etc.) instead of relying on inferred headers, then switched the file path to `Files/orders/*.csv` to load all three years at once.
+4. Explored the DataFrame: column selection with `select`, row filtering with `where`, `count`/`distinct` for summaries.
+5. Aggregated data: `groupBy("Item").sum()` for quantity by product, and `groupBy(year(...))` for orders per year.
+6. Transformed data: added `Year`/`Month` columns via `withColumn`, split `CustomerName` into `FirstName`/`LastName`, reordered columns.
+7. Saved the transformed DataFrame as **Parquet**, then re-saved it **partitioned by Year and Month** and reloaded a single partition with a wildcard path.
+8. Persisted the DataFrame as a **Delta table** (`salesorders`) with `saveAsTable`, then queried it both via embedded SQL in PySpark and directly with `%%sql` magic.
+9. Visualized results: built-in Fabric chart view, then `matplotlib` (bar chart, custom figure, subplots) and `seaborn` (bar + line, themed).
+
+## Key concepts reinforced
+
+- Explicit schemas avoid Spark misreading headers as data and give meaningful column names/types.
+- DataFrame transformations are non-destructive — each method returns a new DataFrame.
+- Parquet vs. Delta: Parquet is just a file format; a **Delta table** adds transactional/relational semantics on top.
+- Partitioning by `Year`/`Month` lets downstream reads target a subset of files directly via the folder path.
+- `%%sql` magic switches a notebook cell to Spark SQL without leaving the PySpark notebook.
+
+
+                                                                     
+# Use Delta Tables in Apache Spark
+
+
+## Creating managed Delta tables with PySpark, exploring table versioning (time travel), running SQL analytics against them, and using a Delta table as a streaming sink.
+
+## Steps performed
+
+1. Created a workspace (`dp_workspace`) and lakehouse (`delta_lakehouse`), uploaded `products.csv` to `Files/products/`.
+2. Loaded the CSV into a DataFrame with an explicit schema (`ProductID`, `ProductName`, `Category`, `ListPrice`).
+3. Persisted it as a managed Delta table with `df.write.format("delta").saveAsTable("dbo.products_table")`.
+4. **Versioning / time travel**: ran a `%%sql UPDATE` to cut Mountain Bikes prices by 10%, then used `DESCRIBE HISTORY` to see the recorded transactions, and joined `products_table VERSION AS OF 0` against the current table to compare original vs. updated prices side by side.
+5. **SQL analytics**: created a temporary view (`products_view`) aggregating count/min/max/avg price by category, queried it directly for the top 10 categories, and charted the result. Also pulled the same view into a DataFrame via `spark.sql(...)` for further PySpark-side work.
+6. **Streaming**: set up a Spark Structured Streaming source reading JSON "device status" events from a folder, wrote the stream to a Delta table (`dbo.IotDeviceData`) as a sink, appended more simulated events, and re-queried the table to confirm the new rows landed — then stopped the stream.
+
+## Key concepts reinforced
+
+- Every write to a Delta table is logged; `DESCRIBE HISTORY` and `VERSION AS OF` give auditable, queryable time travel without separate backups.
+- Delta tables can be a source *or* sink for Structured Streaming — the same table format handles batch and streaming with no separate pipeline.
+- Temporary views keep repeated aggregation logic out of downstream queries — write the aggregation once, query it many times in a session.
+- Pointing a stream writer at a path under `Tables/` auto-creates the managed table for you.
