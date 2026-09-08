@@ -1,0 +1,9 @@
+| Feature | Plain Parquet | Delta Table |
+|---|---|---|
+| **ACID transactions** | ❌ No — if a write fails halfway, you can end up with corrupted or partial data | ✅ Yes — writes are all-or-nothing, so failures don't leave a mess |
+| **Updates & deletes** | ❌ Very hard — Parquet files are immutable; you'd have to rewrite the whole file | ✅ Easy — you can `UPDATE`, `DELETE`, and `MERGE` (upsert) rows directly |
+| **Time travel** | ❌ No history — once overwritten, old data is gone | ✅ Yes — the transaction log lets you query the table as of a previous version or timestamp |
+| **Schema enforcement** | ❌ No built-in check — bad or mismatched data can silently slip in | ✅ Yes — Delta rejects writes that don't match the expected schema unless schema evolution is explicitly enabled |
+| **Schema evolution** | ❌ Manual and messy | ✅ Controlled — you can safely add new columns over time |
+| **Concurrent writes** | ❌ Risky — multiple processes writing at once can conflict or corrupt data | ✅ Safe — the transaction log manages concurrent transactions and conflicts |
+| **Knowing "what's valid"** | ❌ You have to trust that all files in the folder are current | ✅ The transaction log tells the engine which files belong to the current valid version of the table |
