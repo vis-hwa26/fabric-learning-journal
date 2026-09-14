@@ -1,0 +1,13 @@
+***Load data into a warehouse using T-SQL***
+
+1. Created a Workspace 
+2. Created a Lakehouse and Uploaded file (sales.csv)
+3. Created a table in the lakehpuse using Load to table
+4. Created a warehouse, given a unique name to it
+5. Created Fact and Dimension tables in a new query
+6. Created View for loading the staging_data from lakehouse
+7. Load data to the warehouse (from lakehouse using view created before)
+8. Exec Sales.LoadDataFromSatging 2021 <-- Use this command to load the given year data using a stored procedure
+9. Run analylytical queries like Total revenue by Customer, Total revenue by Item etc..
+10. Created another stored procedure for specific date 
+11. Run analytical query for specific date data in the table
