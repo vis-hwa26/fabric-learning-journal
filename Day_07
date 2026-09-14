@@ -1,0 +1,39 @@
+Today I worked on Fabric Warehouse
+Fabric Data Warehouse is an enterprise-scale relational warehouse built on top of a data lake — ideal for star or snowflake schemas, 
+curated data marts, and governed semantic models for BI.
+Features:
+* Storage: All data lives in Delta tables (Parquet files with a transaction log), which is Fabric's shared open storage format.
+* Querying: It's primarily developed in T-SQL and shares much of its engine with the SQL Database Engine, including full multi-table ACID 
+  transactions, materialized views, functions, and stored procedures.
+* Loading data: Bulk loading works through T-SQL/TDS connections or Spark, writing directly to Delta tables.
+* Integration: It's tightly integrated with Power BI for easy reporting and analysis.
+* Two flavors: a full Warehouse item (supports DDL/DML, i.e. you can write and modify data) and a SQL analytics endpoint 
+  (auto-generated for every Lakehouse — lets you query/view data with T-SQL but not modify it).
+* Warehouse vs. Lakehouse: Choose a warehouse for an enterprise-scale, low-setup solution best suited to structured/semi-structured data,
+  and a lakehouse when you're working with large volumes of unstructured data and want Spark as your primary tool — and you can always add the other one later.
+
+Lab:
+1. Set up
+You create a workspace, then create a Warehouse item inside it — a proper relational database (unlike the read-only SQL endpoint you get with a lakehouse).
+
+2. Build the schema
+You manually create a DimProduct table with T-SQL (CREATE TABLE), insert a few rows, then run a bigger script that spins up the full star schema: 
+DimCustomer, DimDate, DimProduct, and FactSalesOrder.
+
+3. Query it
+This is the core of the lab — joining the fact table to dimension tables and aggregating:
+
+sql
+SELECT d.[Year], d.[Month], SUM(so.SalesTotal)
+FROM FactSalesOrder so
+JOIN DimDate d ON so.SalesOrderDateKey = d.DateKey
+GROUP BY d.[Year], d.[Month]
+
+Then you add a second dimension (customer region) to the same query — showing how a star schema lets you slice one fact table by multiple angles at once.
+
+4. Create a view
+You wrap that query in a CREATE VIEW so it's reusable without rewriting the SQL each time.
+
+5. Visual query (no-code option)
+Instead of SQL, you can drag tables onto a canvas, merge them (like a join), expand columns, filter, and export — this is Fabric's Power-Query-style 
+GUI for people who don't want to write SQL.
