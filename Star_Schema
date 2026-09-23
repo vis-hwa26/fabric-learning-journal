@@ -1,0 +1,17 @@
+Start schema is a way of arranging data that resembles star like structure. where the daily transaction/event data is stored in the center table called as fact table
+and all other data which are descriptive are stored in other tables called as dimension table, data in dimension table are neccessary but does not changes too 
+frequently.
+
+Here dimension table are relationally connected with the fact table.
+
+Dimension table contains descriptive and contextual data.It explains who,what,where,when,and how for the data eg. Customer,Product data which contains data for customer
+or a product which are not bound to change very frequently.
+
+fact table contains all facts based data i.e event data, whether a following event occured and details of the event eg.Transaction,Order table.
+
+**Benefits of the star schema**
+- Simplicity — the structure is intuitive, with a central Fact table surrounded by Dim tables, making it easy for anyone to understand and navigate.
+- Query performance — because Fact and Dim tables each have a clear, well-defined role, queries can join directly to the specific Dim table they need 
+  without ambiguity, resulting in faster lookups compared to a flat or highly normalized structure.
+- Reduced storage/redundancy — descriptive attributes (like customer name, product category) are stored once in their Dim table,
+  rather than repeated on every Fact row, which keeps storage use efficient.
