@@ -1,0 +1,11 @@
+When do you use Pipeline?
+Use a Pipeline when you need to coordinate multiple steps together — moving data, running transformations, triggering notebooks — in a specific order,
+with conditional logic, scheduling, or error handling between them. A Pipeline itself doesn't usually transform data; it orchestrates other things that do 
+(Copy activities, Dataflows, Notebooks).
+
+When do you use Dataflow?Use a Dataflow when you want to build transformation logic visually, using Power Query's low-code interface, 
+without writing code — good for cleaning, shaping, and reusable ETL logic that non-programmers on a team can understand and maintain.
+
+When do you use Notebook?
+Use a Notebook when you need full programmatic control — custom logic, complex joins/merges, window functions, or processing data at a scale that 
+benefits from Spark's distributed compute — things that go beyond what a visual, low-code tool can express.
